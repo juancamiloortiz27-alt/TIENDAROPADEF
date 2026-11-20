@@ -1,0 +1,25 @@
+@page
+@model front_tienda.Pages.Cuenta.MiPerfilModel
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<h1>Mi perfil</h1>
+<p>Actualiza tus datos personales.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert @(Model.Error ? "alert-danger" : "alert-success")">@Model.Mensaje</div>
+}
+
+<form method="post" asp-page-handler="Guardar" class="col-lg-6">
+    <label class="form-label" for="Correo">Correo</label>
+    <input id="Correo" class="form-control mb-3" value="@Model.Cliente.Correo" readonly />
+    <label asp-for="Cliente.Nombre" class="form-label">Nombre</label>
+    <input asp-for="Cliente.Nombre" class="form-control mb-3" maxlength="50" required />
+    <label asp-for="Cliente.Apellido" class="form-label">Apellido</label>
+    <input asp-for="Cliente.Apellido" class="form-control mb-3" maxlength="50" required />
+    <label asp-for="Cliente.Telefono" class="form-label">Teléfono</label>
+    <input asp-for="Cliente.Telefono" class="form-control mb-3" maxlength="12" required />
+    <button class="btn btn-primary">Guardar cambios</button>
+</form>

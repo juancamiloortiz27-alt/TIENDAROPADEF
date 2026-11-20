@@ -1,0 +1,103 @@
+@page
+@model front_tienda.Pages.Ventanas.MisPedidosModel
+@{
+    ViewData["Title"] = "Mis pedidos";
+}
+
+<h1>Mis pedidos</h1>
+<p>Consulta tus compras y el estado de cada pedido.</p>
+<a class="btn btn-success mb-3" asp-page-handler="DescargarExcel">Descargar mis compras (Excel)</a>
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-danger">@Model.Mensaje</div>
+}
+
+@if (Model.Lista.Count == 0)
+{
+    <div class="card card-body">
+        <p class="mb-3">Todavía no tienes pedidos.</p>
+        <a class="btn btn-outline-primary align-self-start" asp-page="/Ventanas/Productos">Ver productos</a>
+    </div>
+}
+else
+{
+    @foreach (var pedido in Model.Lista)
+    {
+        <section class="card mb-4">
+            <div class="card-header d-flex justify-content-between flex-wrap gap-2">
+                <strong>Pedido #@pedido.IdPedido</strong>
+                <span>@pedido.Fecha.ToString("g")</span>
+                <span class="badge text-bg-primary">@pedido.Estado</span>
+            </div>
+            <div class="card-body">
+                @if (pedido.Envios?.Count > 0)
+                {
+                    @foreach (var envio in pedido.Envios)
+                    {
+                        <div class="alert alert-light border">
+                            <strong>Envío: @envio.Estado</strong><br />
+                            Transportadora: @envio._Transportadora?.Nombre<br />
+                            Número de guía: <code>@envio.NumeroGuia</code>
+                        </div>
+                    }
+                }
+                else if (pedido.Estado == "Pagado")
+                {
+                    <div class="alert alert-light border">Tu envío está pendiente de asignación a una transportadora.</div>
+                }
+                <h2 class="h5">Productos</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead><tr><th>Prenda</th><th>Color</th><th>Talla</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
+                        <tbody>
+                            @foreach (var detalle in pedido.DetallePedidos ?? new List<libreria_aplicaciones.entidades.DetallePedidos>())
+                            {
+                                <tr>
+                                    <td>@detalle._Producto?.Nombre</td>
+                                    <td>
+                                        @if (detalle._Producto?._Color != null)
+                                        {
+                                            <span class="d-inline-block border rounded-circle me-1" style="width: 16px; height: 16px; vertical-align: middle; background-color: @detalle._Producto._Color.CodigoHexadecimal"></span>
+                                            @detalle._Producto._Color.Nombre
+                                        }
+                                    </td>
+                                    <td>@detalle._Producto?._Talla?.Nombre (@detalle._Producto?._Talla?.SistemaMedida)</td>
+                                    <td>@FormatoMoneda.Cop(detalle.Precio)</td>
+                                    <td>@detalle.Cantidad</td>
+                                    <td>@FormatoMoneda.Cop(detalle.Precio * detalle.Cantidad)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <strong>Entrega</strong><br />
+                        @pedido.DireccionEnvio<br />
+                        @pedido.CiudadEnvio · @pedido.CodigoPostalEnvio
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Pago</strong><br />
+                        @if (pedido.Pagos?.Count > 0)
+                        {
+                            var pago = pedido.Pagos.First();
+                            <span>@pago._MetodoPago?.Nombre · @FormatoMoneda.Cop(pago.Monto) · @pago.FechaPago.ToString("g")</span>
+                        }
+                        else
+                        {
+                            <span>Sin pago registrado</span>
+                        }
+                    </div>
+                </div>
+
+                @if (pedido._Cupon != null)
+                {
+                    <p class="text-success mt-3 mb-1">Cupón @pedido._Cupon.Codigo aplicado (@(pedido._Cupon.PorcentajeDescuento)%).</p>
+                }
+                <p class="fs-5 fw-bold text-end mb-0">Total: @FormatoMoneda.Cop(pedido.Total)</p>
+            </div>
+        </section>
+    }
+}

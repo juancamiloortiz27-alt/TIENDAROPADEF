@@ -1,0 +1,42 @@
+@page
+@model front_tienda.Pages.Ventanas.MarcasModel
+@{
+    ViewData["Title"] = "Marcas";
+}
+
+<h1>Marcas</h1>
+<p>Explora las marcas disponibles en nuestra tienda.</p>
+
+<form method="post" class="mb-4">
+    <div class="input-group col-md-6">
+        <input asp-for="TextoBusqueda" class="form-control" placeholder="Buscar marca" />
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button>
+    </div>
+</form>
+
+<div class="row">
+    @foreach (var marca in Model.Lista)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 catalog-brand-card">
+                @if (!string.IsNullOrWhiteSpace(marca.Imagen))
+                {
+                    <img src="@marca.Imagen" alt="Imagen de @marca.Nombre" class="brand-page-image" />
+                }
+                <div class="card-body">
+                    <h2 class="h5 card-title"><a class="catalog-brand-link" asp-page="/Ventanas/Productos" asp-route-marca="@marca.Nombre">@marca.Nombre</a></h2>
+                    <p class="card-text">País de origen: @marca.PaisOrigen</p>
+                    @if (!string.IsNullOrWhiteSpace(marca.SitioWeb))
+                    {
+                        <a href="@marca.SitioWeb" target="_blank" rel="noopener noreferrer">Visitar sitio web</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Lista.Count == 0)
+{
+    <p>No se encontraron marcas activas.</p>
+}

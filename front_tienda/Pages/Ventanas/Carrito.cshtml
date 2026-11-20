@@ -1,0 +1,143 @@
+@page
+@model front_tienda.Pages.Ventanas.CarritoModel
+@{
+    ViewData["Title"] = "Mi carrito";
+}
+
+<h1>Mi carrito</h1>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+@if (Model.PedidoConfirmado != null)
+{
+    <div class="card card-body mb-3">
+        <h2 class="h4">Pedido #@Model.PedidoConfirmado.IdPedido</h2>
+        <p>Estado: @Model.PedidoConfirmado.Estado</p>
+        <p class="fs-5 fw-bold">Total: @FormatoMoneda.Cop(Model.PedidoConfirmado.Total)</p>
+        @if (Model.PedidoConfirmado.Pagos?.FirstOrDefault()?._MetodoPago != null)
+        {
+            <p>Método: @Model.PedidoConfirmado.Pagos.First()._MetodoPago.Nombre</p>
+        }
+        <p>Enviaremos el pedido a: @Model.PedidoConfirmado.DireccionEnvio, @Model.PedidoConfirmado.CiudadEnvio (@Model.PedidoConfirmado.CodigoPostalEnvio).</p>
+    </div>
+    <a class="btn btn-outline-primary" asp-page="/Ventanas/Productos">Seguir comprando</a>
+}
+else if (Model.Carrito.Detalles.Count == 0)
+{
+    <p>Tu carrito está vacío.</p>
+    <a class="btn btn-outline-primary" asp-page="/Ventanas/Productos">Seguir comprando</a>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var detalle in Model.Carrito.Detalles)
+                {
+                    <tr>
+                        <td>
+                            <div class="cart-product-summary">
+                                @if (!string.IsNullOrWhiteSpace(detalle.Imagen))
+                                {
+                                    <img src="@detalle.Imagen" alt="@detalle.Nombre" class="cart-product-image" />
+                                }
+                                else
+                                {
+                                    <div class="cart-product-image-placeholder">Sin foto</div>
+                                }
+                                <div>
+                            <strong>@detalle.Nombre</strong><br />
+                            <span>
+                                <span class="d-inline-block border rounded-circle me-1" style="width: 16px; height: 16px; vertical-align: middle; background-color: @detalle.CodigoHexadecimal"></span>
+                                @detalle.NombreColor · Talla @detalle.NombreTalla (@detalle.SistemaMedida)
+                            </span>
+                            @if (detalle.StockDisponible == 0)
+                            {
+                                <div class="text-danger">Esta talla está agotada. Elimínala del carrito.</div>
+                            }
+                            else if (detalle.Cantidad > detalle.StockDisponible)
+                            {
+                                <div class="text-danger">Solo quedan @detalle.StockDisponible unidades; actualiza la cantidad.</div>
+                            }
+                                </div>
+                            </div>
+                        </td>
+                        <td>@FormatoMoneda.Cop(detalle.PrecioUnitario)</td>
+                        <td>
+                            <form method="post" class="d-flex gap-2">
+                                <input type="hidden" name="idDetalleCarrito" value="@detalle.IdDetalleCarrito" />
+                                <input type="number" name="cantidad" value="@detalle.Cantidad" min="1" max="@detalle.StockDisponible" class="form-control" style="width: 90px" />
+                                <button class="btn btn-sm btn-outline-primary" asp-page-handler="Actualizar">Actualizar</button>
+                            </form>
+                        </td>
+                        <td>@FormatoMoneda.Cop(detalle.Subtotal)</td>
+                        <td>
+                            <form method="post" onsubmit="return confirm('¿Quieres quitar este producto del carrito?');">
+                                <input type="hidden" name="id" value="@detalle.IdDetalleCarrito" />
+                                <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Quitar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center">
+        <a class="btn btn-outline-primary" asp-page="/Ventanas/Productos">Seguir comprando</a>
+        <div class="text-end">
+            @if (Model.CuponAplicado != null)
+            {
+                <div>Subtotal: @FormatoMoneda.Cop(Model.Carrito.Total)</div>
+                <div class="text-success">Descuento (@(Model.CuponAplicado.PorcentajeDescuento)%): -@FormatoMoneda.Cop(Model.CuponAplicado.Descuento)</div>
+                <p class="fs-4 fw-bold mb-0">Total con cupón: @FormatoMoneda.Cop(Model.CuponAplicado.TotalConDescuento)</p>
+            }
+            else
+            {
+                <p class="fs-4 fw-bold mb-0">Total: @FormatoMoneda.Cop(Model.Carrito.Total)</p>
+            }
+        </div>
+    </div>
+    <hr />
+    <h2 class="h4">Finalizar pedido</h2>
+    @if (Model.Direcciones.Count == 0)
+    {
+        <p>Guarda una dirección antes de finalizar la compra.</p>
+        <a class="btn btn-outline-primary" asp-page="/Ventanas/Direcciones">Agregar dirección</a>
+    }
+    else
+    {
+        <form method="post" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="IdDireccion" class="form-label">Dirección de entrega</label>
+                <select asp-for="IdDireccion" class="form-select" required>
+                    <option value="">Selecciona una dirección</option>
+                    @foreach (var direccion in Model.Direcciones)
+                    {
+                        <option value="@direccion.IdDireccion">@direccion.Direccion, @direccion.Ciudad (@direccion.CodigoPostal)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="CodigoCupon" class="form-label">Cupón (opcional)</label>
+                <input asp-for="CodigoCupon" class="form-control" maxlength="15" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="IdMetodoPago" class="form-label">Método de pago</label>
+                <select asp-for="IdMetodoPago" class="form-select" required>
+                    <option value="">Selecciona un método</option>
+                    @foreach (var metodo in Model.MetodosPago)
+                    {
+                        <option value="@metodo.IdMetodoPago">@metodo.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-12 d-flex gap-2">
+                <button class="btn btn-outline-primary" asp-page-handler="AplicarCupon" formnovalidate>Aplicar</button>
+                <button class="btn btn-primary" asp-page-handler="Confirmar">Pagar</button>
+            </div>
+        </form>
+    }
+}

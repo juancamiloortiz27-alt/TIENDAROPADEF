@@ -1,0 +1,69 @@
+@page
+@model front_tienda.Pages.Administracion.TallasModel
+@{
+    ViewData["Title"] = "Tallas";
+}
+
+<h1>Tallas</h1>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" class="col-md-6 mb-4">
+    <input type="hidden" asp-for="Entidad.IdTalla" />
+    <label asp-for="Entidad.Nombre">Nombre</label>
+    <input asp-for="Entidad.Nombre" class="form-control mb-2" maxlength="10" />
+    <label asp-for="Entidad.Tipo">Tipo</label>
+    <input asp-for="Entidad.Tipo" class="form-control mb-2" maxlength="20" />
+    <label asp-for="Entidad.Descripcion">Descripción</label>
+    <input asp-for="Entidad.Descripcion" class="form-control mb-2" maxlength="100" />
+    <label asp-for="Entidad.SistemaMedida">Sistema de medida</label>
+    <select asp-for="Entidad.SistemaMedida" class="form-select mb-3">
+        <option value="">Selecciona un sistema</option>
+        <option value="UK">UK</option>
+        <option value="US">US</option>
+        <option value="EU">EU</option>
+        <option value="Universal">Universal</option>
+    </select>
+    @if (Model.Entidad.IdTalla == 0)
+    {
+        <button class="btn btn-primary" asp-page-handler="Insertar">Insertar</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" asp-page-handler="Actualizar">Actualizar</button>
+    }
+    <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="row g-2 col-md-8">
+        <div class="col-md-3"><input asp-for="Filtro.Nombre" class="form-control" placeholder="Nombre" /></div>
+        <div class="col-md-3"><input asp-for="Filtro.Tipo" class="form-control" placeholder="Tipo" /></div>
+        <div class="col-md-3"><input asp-for="Filtro.SistemaMedida" class="form-control" placeholder="Sistema de medida" /></div>
+        <div class="col-md-3"><button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button></div>
+    </div>
+</form>
+
+<table class="table">
+    <thead><tr><th>Nombre</th><th>Tipo</th><th>Descripción</th><th>Sistema de medida</th><th>Acciones</th></tr></thead>
+    <tbody>
+        @foreach (var talla in Model.Lista)
+        {
+            <tr>
+                <td>@talla.Nombre</td><td>@talla.Tipo</td><td>@talla.Descripcion</td><td>@talla.SistemaMedida</td>
+                <td>
+                    <form method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@talla.IdTalla" />
+                        <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                    </form>
+                    <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres borrar esta talla?');">
+                        <input type="hidden" name="id" value="@talla.IdTalla" />
+                        <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Borrar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

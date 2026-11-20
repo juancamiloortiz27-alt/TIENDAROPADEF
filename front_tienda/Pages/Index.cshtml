@@ -1,0 +1,115 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<section class="home-hero">
+    <div class="home-hero-content">
+        <span class="home-eyebrow">TIENDA DE ROPA</span>
+        <h1>Tu estilo,<br />a tu manera.</h1>
+        <p>Descubre prendas para cada día y encuentra la que va contigo.</p>
+        <a class="btn btn-light btn-lg" asp-page="/Ventanas/Productos">Explorar productos</a>
+    </div>
+    <div class="home-hero-decoration" aria-hidden="true">
+        <div class="home-hero-circle"></div>
+        <span>ESTILO<br />QUE SE<br />Siente</span>
+    </div>
+</section>
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info mt-4">@Model.Mensaje</div>
+}
+
+<section class="home-section">
+    <div class="home-section-heading">
+        <div>
+            <span class="home-eyebrow text-muted">PARA DESCUBRIR</span>
+            <h2>Prendas para ti</h2>
+        </div>
+        <a class="home-text-link" asp-page="/Ventanas/Productos">Ver todos los productos <span aria-hidden="true">→</span></a>
+    </div>
+
+    @if (Model.Productos.Count == 0)
+    {
+        <div class="home-empty-state">
+            <p class="mb-2">Pronto encontrarás aquí prendas de nuestra tienda.</p>
+            <a asp-page="/Ventanas/Productos">Ir al catálogo</a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            @foreach (var producto in Model.Productos)
+            {
+                <div class="col">
+                    <a class="home-product-card" asp-page="/Ventanas/Producto" asp-route-codigoModelo="@producto.CodigoModelo">
+                        @if (!string.IsNullOrWhiteSpace(producto.Imagen))
+                        {
+                            <img src="@producto.Imagen" alt="@producto.Nombre" class="home-product-photo" />
+                        }
+                        else
+                        {
+                            <div class="home-product-placeholder" aria-label="Imagen del producto próximamente">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="76" height="76" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                                    <path d="m22 12 10 5 10-5 12 9-7 10-6-4v25H23V27l-6 4-7-10 12-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                                    <path d="M25 13c0 5 3 8 7 8s7-3 7-8" stroke="currentColor" stroke-width="2" />
+                                </svg>
+                            </div>
+                        }
+                        <div class="home-product-info">
+                            <span class="home-product-category">@producto.NombreCategoria</span>
+                            <h3>@producto.Nombre</h3>
+                            <span class="home-product-brand">@producto.NombreMarca</span>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <strong>@FormatoMoneda.Cop(producto.Precio)</strong>
+                                <span class="home-product-action">Ver prenda <span aria-hidden="true">→</span></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@if (Model.Marcas.Count > 0)
+{
+    <section class="home-brands-section">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-eyebrow text-muted">NUESTRAS MARCAS</span>
+                <h2>Encuentra tus favoritas</h2>
+            </div>
+            <a class="home-text-link" asp-page="/Ventanas/Marcas">Ver marcas <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="home-brand-list">
+            @foreach (var marca in Model.Marcas)
+            {
+                var productoMarca = Model.ProductosMarca.FirstOrDefault(x => x.NombreMarca == marca.Nombre);
+                <a class="home-brand-name" asp-page="/Ventanas/Productos" asp-route-marca="@marca.Nombre" aria-label="Ver productos de @marca.Nombre">
+                    @if (!string.IsNullOrWhiteSpace(marca.Imagen))
+                    {
+                        <img src="@marca.Imagen" alt="Imagen de @marca.Nombre" class="home-brand-photo" />
+                    }
+                    else if (!string.IsNullOrWhiteSpace(productoMarca?.Imagen))
+                    {
+                        <img src="@productoMarca.Imagen" alt="Prendas de @marca.Nombre" class="home-brand-photo" />
+                    }
+                    else
+                    {
+                        <div class="home-brand-photo home-product-placeholder" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 64 64" fill="none">
+                                <path d="m22 12 10 5 10-5 12 9-7 10-6-4v25H23V27l-6 4-7-10 12-9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                                <path d="M25 13c0 5 3 8 7 8s7-3 7-8" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                    }
+                    <span class="home-brand-label">@marca.Nombre</span>
+                    <small>Ver prendas →</small>
+                </a>
+            }
+        </div>
+    </section>
+}

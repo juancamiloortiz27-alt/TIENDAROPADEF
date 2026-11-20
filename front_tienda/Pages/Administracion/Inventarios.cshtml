@@ -1,0 +1,97 @@
+@page
+@model front_tienda.Pages.Administracion.InventariosModel
+@{
+    ViewData["Title"] = "Inventarios";
+}
+
+<h1>Inventarios</h1>
+<p>El mínimo está fijado en 5 unidades y solo genera una notificación.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+@if (!string.IsNullOrEmpty(Model.NotificacionStock))
+{
+    <script>
+        window.addEventListener("load", function () {
+            window.alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.NotificacionStock)));
+        });
+    </script>
+}
+
+<form method="post" class="row g-3 mb-4">
+    <input type="hidden" asp-for="Entidad.IdInventario" />
+    <div class="col-md-5">
+        <label asp-for="Entidad.Producto" class="form-label">Producto</label>
+        <select asp-for="Entidad.Producto" class="form-select">
+            <option value="0">Selecciona un producto</option>
+            @foreach (var producto in Model.ProductosLista)
+            {
+                <option value="@producto.IdProducto">@producto.Nombre - @producto._Color?.Nombre - @producto._Talla?.Nombre (@producto._Talla?.SistemaMedida)</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Entidad.Cantidad" class="form-label">Cantidad disponible</label>
+        <input asp-for="Entidad.Cantidad" type="number" min="0" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Entidad.Ubicacion" class="form-label">Ubicación</label>
+        <input asp-for="Entidad.Ubicacion" class="form-control" maxlength="30" />
+    </div>
+    <div class="col-12">
+        @if (Model.Entidad.IdInventario == 0)
+        {
+            <button class="btn btn-primary" asp-page-handler="Insertar">Guardar existencias</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" asp-page-handler="Actualizar">Actualizar existencias</button>
+        }
+        <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+    </div>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="row g-2 col-md-8">
+        <div class="col-md-4">
+            <select asp-for="Filtro.Producto" class="form-select">
+                <option value="0">Todos los productos</option>
+                @foreach (var producto in Model.ProductosLista)
+                {
+                    <option value="@producto.IdProducto">@producto.Nombre - @producto._Color?.Nombre - @producto._Talla?.Nombre (@producto._Talla?.SistemaMedida)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4"><input asp-for="Filtro.Ubicacion" class="form-control" placeholder="Ubicación" /></div>
+        <div class="col-md-4"><button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button></div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Producto</th><th>Cantidad</th><th>Stock mínimo</th><th>Ubicación</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var inventario in Model.Lista)
+            {
+                <tr class="@(inventario.Cantidad <= inventario.StockMinimo ? "table-warning" : "")">
+                    <td>@inventario._Producto?.Nombre</td>
+                    <td>@inventario.Cantidad</td>
+                    <td>@inventario.StockMinimo</td>
+                    <td>@inventario.Ubicacion</td>
+                    <td>@(inventario.Cantidad <= inventario.StockMinimo ? "Requiere reposición" : "Disponible")</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@inventario.IdInventario" />
+                            <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                        </form>
+                        <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres borrar este registro de inventario?');">
+                            <input type="hidden" name="id" value="@inventario.IdInventario" />
+                            <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

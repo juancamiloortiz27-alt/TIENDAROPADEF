@@ -1,0 +1,59 @@
+@page
+@model front_tienda.Pages.Administracion.UsuariosModel
+@{
+    ViewData["Title"] = "Administrar usuarios";
+}
+
+<h1>Administrar usuarios</h1>
+<p>Solo un administrador puede consultar y cambiar roles.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+@if (Model.SesionExpirada)
+{
+    <a class="btn btn-primary mb-3" asp-page="/Cuenta/Acceso">Iniciar sesión</a>
+}
+
+<table class="table">
+    <thead><tr><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+        @foreach (var usuario in Model.Lista)
+        {
+            <tr>
+                <td>@usuario.Correo</td>
+                <td>@usuario.Rol</td>
+                <td>@(usuario.Estado ? "Activo" : "Inactivo")</td>
+                <td>
+                    @if (usuario.TieneCuenta)
+                    {
+                    <form method="post" asp-page-handler="CambiarRol" class="d-flex gap-2">
+                        <input type="hidden" name="Entidad.IdUsuario" value="@usuario.IdUsuario" />
+                        <select name="Entidad.Rol" class="form-select">
+                            <option value="Cliente" selected="@(usuario.Rol == "Cliente" ? "selected" : null)">Cliente</option>
+                            <option value="Administrador" selected="@(usuario.Rol == "Administrador" ? "selected" : null)">Administrador</option>
+                        </select>
+                        <button class="btn btn-primary">Guardar</button>
+                    </form>
+                    <form method="post" asp-page-handler="CambiarEstado" class="mt-2">
+                        <input type="hidden" name="Entidad.IdUsuario" value="@usuario.IdUsuario" />
+                        <input type="hidden" name="Entidad.Estado" value="@(!usuario.Estado)" />
+                        @if (usuario.Estado)
+                        {
+                            <button class="btn btn-outline-danger">Desactivar cuenta</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-success">Activar cuenta</button>
+                        }
+                    </form>
+                    }
+                    else
+                    {
+                        <span>El cliente debe registrarse con este correo para crear su acceso.</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

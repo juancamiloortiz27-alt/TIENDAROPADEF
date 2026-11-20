@@ -1,0 +1,153 @@
+@page
+@model front_tienda.Pages.Administracion.ProductosModel
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<h1>Administrar productos</h1>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" enctype="multipart/form-data" class="row g-3 mb-4">
+    <input type="hidden" asp-for="Entidad.IdProducto" />
+    <input type="hidden" asp-for="Entidad.Imagen" />
+    <div class="col-md-6">
+        <label asp-for="Entidad.CodigoModelo" class="form-label">Código de modelo y color</label>
+        <input asp-for="Entidad.CodigoModelo" class="form-control" maxlength="40" />
+        <div class="form-text">Usa el mismo código para todas las tallas de esta prenda y color. Ejemplo: CAM-101-NEGRA.</div>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Nombre" class="form-label">Nombre</label>
+        <input asp-for="Entidad.Nombre" class="form-control" maxlength="50" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Precio" class="form-label">Precio</label>
+        <input asp-for="Entidad.Precio" type="number" min="0.01" step="0.01" class="form-control" />
+    </div>
+    <div class="col-12">
+        <label asp-for="Entidad.Descripcion" class="form-label">Descripción</label>
+        <textarea asp-for="Entidad.Descripcion" class="form-control" maxlength="150" rows="2"></textarea>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Categoria" class="form-label">Categoría</label>
+        <select asp-for="Entidad.Categoria" class="form-select">
+            <option value="0">Selecciona una categoría</option>
+            @foreach (var categoria in Model.CategoriasLista)
+            {
+                <option value="@categoria.IdCategoria">@categoria.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Marca" class="form-label">Marca</label>
+        <select asp-for="Entidad.Marca" class="form-select">
+            <option value="0">Selecciona una marca</option>
+            @foreach (var marca in Model.MarcasLista)
+            {
+                <option value="@marca.IdMarca">@marca.Nombre</option>
+            }
+        </select>
+        <div class="form-text">Al cambiar la marca o la categoría, se actualizarán en todas las tallas con el mismo código de modelo.</div>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Color" class="form-label">Color</label>
+        <select asp-for="Entidad.Color" class="form-select">
+            <option value="0">Selecciona un color</option>
+            @foreach (var color in Model.ColoresLista)
+            {
+                <option value="@color.IdColor">@color.Nombre (@color.CodigoHexadecimal)</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Talla" class="form-label">Talla</label>
+        <select asp-for="Entidad.Talla" class="form-select">
+            <option value="0">Selecciona una talla</option>
+            @foreach (var talla in Model.TallasLista)
+            {
+                <option value="@talla.IdTalla">@talla.Nombre (@talla.SistemaMedida)</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Entidad.Proveedor" class="form-label">Proveedor</label>
+        <select asp-for="Entidad.Proveedor" class="form-select">
+            <option value="0">Selecciona un proveedor</option>
+            @foreach (var proveedor in Model.ProveedoresLista)
+            {
+                <option value="@proveedor.IdProveedor">@proveedor.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-12">
+        <label asp-for="ArchivoImagen" class="form-label">Foto del producto</label>
+        <input asp-for="ArchivoImagen" type="file" accept=".jpg,.jpeg,.jfif,.png,.webp,.gif,.bmp,.tif,.tiff,.avif" class="form-control" />
+        <div class="form-text">Selecciona una imagen JPG, PNG, WEBP, GIF, BMP, TIFF o AVIF de máximo 5 MB.</div>
+        @if (!string.IsNullOrWhiteSpace(Model.Entidad.Imagen))
+        {
+            <img src="@Model.Entidad.Imagen" alt="Foto actual de @Model.Entidad.Nombre" class="admin-image-preview mt-2" />
+        }
+    </div>
+    <div class="col-12">
+        @if (Model.Entidad.IdProducto == 0)
+        {
+            <button class="btn btn-primary" asp-page-handler="Insertar">Insertar</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" asp-page-handler="Actualizar">Actualizar</button>
+        }
+        <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+    </div>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="input-group col-md-6">
+        <input asp-for="Filtro.Nombre" class="form-control" placeholder="Nombre" />
+        <input asp-for="Filtro.CodigoModelo" class="form-control" placeholder="Código de modelo" />
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Foto</th><th>Código de modelo</th><th>Producto</th><th>Precio</th><th>Categoría</th><th>Marca</th><th>Color</th><th>Talla</th><th>Proveedor</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var producto in Model.Lista)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(producto.Imagen))
+                        {
+                            <img src="@producto.Imagen" alt="Foto de @producto.Nombre" class="admin-image-thumbnail" />
+                        }
+                    </td>
+                    <td>@producto.CodigoModelo</td>
+                    <td><strong>@producto.Nombre</strong><br /><small>@producto.Descripcion</small></td>
+                    <td>@FormatoMoneda.Cop(producto.Precio)</td>
+                    <td>@producto._Categoria?.Nombre</td>
+                    <td>@producto._Marca?.Nombre</td>
+                    <td><span class="d-inline-block border rounded me-1" style="width: 20px; height: 20px; vertical-align: middle; background-color: @producto._Color?.CodigoHexadecimal"></span>@producto._Color?.Nombre</td>
+                    <td>@producto._Talla?.Nombre (@producto._Talla?.SistemaMedida)</td>
+                    <td>@producto._Proveedor?.Nombre</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@producto.IdProducto" />
+                            <button class="btn btn-sm btn-outline-success" asp-page-handler="NuevaTalla">Agregar talla</button>
+                        </form>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@producto.IdProducto" />
+                            <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                        </form>
+                        <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres borrar este producto?');">
+                            <input type="hidden" name="id" value="@producto.IdProducto" />
+                            <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="front_tienda/front_tienda.csproj" />
+  <Project Path="libreria_aplicaciones/libreria_aplicaciones.csproj" />
+  <Project Path="presentaciones_tienda/presentaciones_tienda.csproj" />
+  <Project Path="pruebas_unitarias/pruebas_unitarias.csproj" />
+  <Project Path="servicios_tienda/servicios_tienda.csproj" />
+</Solution>

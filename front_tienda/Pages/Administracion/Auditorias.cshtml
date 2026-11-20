@@ -1,0 +1,60 @@
+@page
+@model front_tienda.Pages.Administracion.AuditoriasModel
+@{
+    ViewData["Title"] = "Auditorías";
+}
+
+<h1>Auditorías</h1>
+<p>Registro de cambios realizados en la plataforma. Se muestran los 200 más recientes.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+@if (Model.SesionExpirada)
+{
+    <a class="btn btn-primary mb-3" asp-page="/Cuenta/Acceso">Iniciar sesión</a>
+}
+else
+{
+    <a class="btn btn-success mb-3" asp-page-handler="DescargarExcel">Descargar auditorías (Excel)</a>
+    @if (Model.Lista.Count == 0)
+    {
+        <p>Aún no hay cambios registrados.</p>
+    }
+    else
+    {
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha y hora</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Registro</th>
+                    <th>Cambios</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var auditoria in Model.Lista)
+                {
+                    <tr>
+                        <td class="text-nowrap">@auditoria.FechaHoraUtc.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        <td>
+                            @auditoria.CorreoUsuario
+                            @if (!string.IsNullOrWhiteSpace(auditoria.RolUsuario))
+                            {
+                                <div class="text-muted small">@auditoria.RolUsuario</div>
+                            }
+                        </td>
+                        <td>@auditoria.Accion</td>
+                        <td>@auditoria.Entidad<br /><span class="text-muted small">@auditoria.IdRegistro</span></td>
+                        <td><pre class="audit-change-details">@Model.MostrarCambios(auditoria.Cambios)</pre></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+      </div>
+    }
+}

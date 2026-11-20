@@ -1,0 +1,69 @@
+@page
+@model front_tienda.Pages.Administracion.MetodosPagoModel
+@{
+    ViewData["Title"] = "Métodos de pago";
+}
+
+<h1>Administrar métodos de pago</h1>
+<p>Configura los métodos de pago disponibles para el checkout.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" class="col-lg-6 mb-4">
+    <input type="hidden" asp-for="Entidad.IdMetodoPago" />
+    <label asp-for="Entidad.Nombre" class="form-label">Nombre</label>
+    <input asp-for="Entidad.Nombre" class="form-control mb-2" maxlength="30" required />
+    <label asp-for="Entidad.Descripcion" class="form-label">Descripción</label>
+    <input asp-for="Entidad.Descripcion" class="form-control mb-2" maxlength="100" required />
+    <label asp-for="Entidad.Tipo" class="form-label">Tipo</label>
+    <input asp-for="Entidad.Tipo" class="form-control mb-2" maxlength="20" placeholder="Digital" required />
+    <label asp-for="Entidad.Comision" class="form-label">Comisión informativa (%)</label>
+    <input asp-for="Entidad.Comision" class="form-control mb-2" type="number" min="0" max="100" step="0.01" required />
+    <div class="form-check mb-3">
+        <input asp-for="Entidad.Estado" class="form-check-input" />
+        <label asp-for="Entidad.Estado" class="form-check-label">Disponible para clientes</label>
+    </div>
+    @if (Model.Entidad.IdMetodoPago == 0)
+    {
+        <button class="btn btn-primary" asp-page-handler="Insertar">Crear método</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" asp-page-handler="Actualizar">Guardar cambios</button>
+    }
+    <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="input-group col-md-6">
+        <input asp-for="Filtro.Nombre" class="form-control" placeholder="Buscar método" />
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Nombre</th><th>Descripción</th><th>Tipo</th><th>Comisión</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var metodo in Model.Lista)
+            {
+                <tr>
+                    <td>@metodo.Nombre</td><td>@metodo.Descripcion</td><td>@metodo.Tipo</td>
+                    <td>@(metodo.Comision)%</td><td>@(metodo.Estado ? "Disponible" : "Desactivado")</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@metodo.IdMetodoPago" />
+                            <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                        </form>
+                        <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres eliminar este método de pago?');">
+                            <input type="hidden" name="id" value="@metodo.IdMetodoPago" />
+                            <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,17 @@
+# Visual Studio and local user state
+.vs/
+*.user
+*.suo
+*.slnLaunch.user
+*.csproj.Backup.tmp
+
+# Build and test output
+**/bin/
+**/obj/
+**/TestResults/
+TestResults/
+
+# Local development settings and credentials
+**/appsettings.Development.json
+.env
+.env.*

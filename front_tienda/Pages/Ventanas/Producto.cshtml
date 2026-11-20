@@ -1,0 +1,167 @@
+@page
+@model front_tienda.Pages.Ventanas.ProductoModel
+@{
+    ViewData["Title"] = Model.Producto?.Nombre ?? "Producto";
+}
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+@if (Model.Producto != null)
+{
+    <div class="row g-4">
+        <div class="col-md-5">
+            @if (!string.IsNullOrWhiteSpace(Model.Producto.Imagen))
+            {
+                <img src="@Model.Producto.Imagen" alt="@Model.Producto.Nombre" class="product-detail-photo" />
+            }
+        </div>
+        <div class="col-md-7">
+            <p class="text-muted mb-1">@Model.Producto.NombreCategoria</p>
+            <h1>@Model.Producto.Nombre</h1>
+            <p>@Model.Producto.Descripcion</p>
+            <p><strong>Marca:</strong> @Model.Producto.NombreMarca</p>
+            <p>
+                <strong>Color:</strong>
+                <span class="d-inline-block border rounded-circle me-1" style="width: 18px; height: 18px; vertical-align: middle; background-color: @Model.Producto.CodigoHexadecimal"></span>
+                @Model.Producto.NombreColor
+            </p>
+            <p class="fs-4 fw-bold">@FormatoMoneda.Cop(Model.Producto.Precio)</p>
+
+            @if (Model.TallasDisponibles.Count == 0)
+            {
+                <div class="alert alert-secondary mt-3">Producto agotado</div>
+            }
+            else
+            {
+                <form method="post" asp-page-handler="AgregarAlCarrito" data-product-form>
+                    <input type="hidden" asp-for="CodigoModelo" />
+                    <fieldset class="mt-3">
+                        <legend class="fs-6 fw-semibold">Selecciona la talla</legend>
+                        <div class="tallas-selector">
+                            @foreach (var variante in Model.TallasDisponibles)
+                            {
+                                var idTalla = "talla-" + variante.IdProducto;
+                                <input class="visually-hidden talla-radio" type="radio" name="IdProductoSeleccionado" id="@idTalla" value="@variante.IdProducto" data-stock="@variante.StockDisponible" checked="@(Model.IdProductoSeleccionado == variante.IdProducto ? "checked" : null)" required />
+                                <label class="talla-opcion" for="@idTalla" title="@variante.SistemaMedida">@variante.NombreTalla</label>
+                            }
+                        </div>
+                    </fieldset>
+                    @if (Model.ClienteAutenticado)
+                    {
+                        <div class="product-quantity-control mt-3">
+                            <label asp-for="Cantidad" class="form-label">Cantidad</label>
+                            <input asp-for="Cantidad" type="number" min="1" max="@Model.TallasDisponibles.Max(x => x.StockDisponible)" class="form-control" data-product-quantity aria-describedby="stock-producto" required disabled />
+                            <small id="stock-producto" class="form-text text-muted" data-product-stock-message>Selecciona una talla para ver el máximo disponible.</small>
+                        </div>
+                        <button class="btn btn-primary mt-3">Agregar al carrito</button>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary mt-3" asp-page="/Cuenta/Acceso" asp-route-returnUrl="@Model.RutaActual">Inicia sesión para comprar</a>
+                    }
+                </form>
+            }
+
+            @if (Model.Mensaje == "Producto agregado al carrito")
+            {
+                <a class="btn btn-link mt-2" asp-page="/Ventanas/Carrito">Ver carrito</a>
+            }
+        </div>
+    </div>
+
+    <section class="mt-5">
+        <hr />
+        <h2>Reseñas de clientes</h2>
+        @if (Model.ListaReseñas.Count > 0)
+        {
+            <p>Calificación promedio: <strong>@Model.CalificacionPromedio.ToString("0.0") / 5</strong> · @Model.ListaReseñas.Count reseña(s)</p>
+        }
+
+        @if (Model.ClienteAutenticado)
+        {
+            <form method="post" asp-page-handler="AgregarReseña" class="card card-body mb-4 col-lg-7">
+                <input type="hidden" name="CodigoModelo" value="@Model.CodigoModelo" />
+                <input type="hidden" asp-for="NuevaReseña.Producto" value="@Model.Producto.IdProducto" />
+                <h3 class="h5">Escribe una reseña</h3>
+                <label asp-for="NuevaReseña.Calificacion" class="form-label">Calificación</label>
+                <select asp-for="NuevaReseña.Calificacion" class="form-select mb-3" required>
+                    <option value="">Selecciona de 1 a 5 estrellas</option>
+                    <option value="5">5 estrellas</option>
+                    <option value="4">4 estrellas</option>
+                    <option value="3">3 estrellas</option>
+                    <option value="2">2 estrellas</option>
+                    <option value="1">1 estrella</option>
+                </select>
+                <label asp-for="NuevaReseña.Comentario" class="form-label">Comentario</label>
+                <textarea asp-for="NuevaReseña.Comentario" class="form-control mb-3" maxlength="200" rows="3" required></textarea>
+                <button class="btn btn-primary align-self-start">Publicar reseña</button>
+                <small class="text-muted mt-2">Solo puedes reseñar un producto que hayas comprado en un pedido pagado.</small>
+            </form>
+        }
+        else
+        {
+            <p><a asp-page="/Cuenta/Acceso" asp-route-returnUrl="@Model.RutaActual">Inicia sesión</a> para publicar una reseña después de comprar este producto.</p>
+        }
+
+        @if (Model.ListaReseñas.Count == 0)
+        {
+            <p>Aún no hay reseñas para este producto.</p>
+        }
+        else
+        {
+            @foreach (var reseña in Model.ListaReseñas)
+            {
+                <article class="card card-body mb-3 col-lg-7">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>@reseña._Cliente?.Nombre</strong>
+                            <div class="text-warning">@reseña.Calificacion.ToString("0") / 5 estrellas</div>
+                        </div>
+                        @if (Model.EsAdministrador)
+                        {
+                            <form method="post" asp-page-handler="BorrarReseña" onsubmit="return confirm('¿Quieres eliminar esta reseña?');">
+                                <input type="hidden" name="CodigoModelo" value="@Model.CodigoModelo" />
+                                <input type="hidden" name="id" value="@reseña.IdReseña" />
+                                <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        }
+                    </div>
+                    <p class="mb-0 mt-2">@reseña.Comentario</p>
+                </article>
+            }
+        }
+    </section>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("[data-product-form]");
+            const cantidad = form?.querySelector("[data-product-quantity]");
+            const mensajeStock = form?.querySelector("[data-product-stock-message]");
+            const tallas = form?.querySelectorAll(".talla-radio");
+            if (!form || !cantidad || !mensajeStock || !tallas) return;
+
+            function actualizarCantidadMaxima() {
+                const tallaSeleccionada = form.querySelector(".talla-radio:checked");
+                if (!tallaSeleccionada) {
+                    cantidad.disabled = true;
+                    mensajeStock.textContent = "Selecciona una talla para ver el máximo disponible.";
+                    return;
+                }
+
+                const stock = Number(tallaSeleccionada.dataset.stock);
+                cantidad.max = stock;
+                cantidad.disabled = stock <= 0;
+                mensajeStock.textContent = `Puedes agregar hasta ${stock} unidad(es) de esta talla.`;
+                if (Number(cantidad.value) > stock) cantidad.value = stock;
+            }
+
+            tallas.forEach(talla => talla.addEventListener("change", actualizarCantidadMaxima));
+            actualizarCantidadMaxima();
+        });
+    </script>
+}

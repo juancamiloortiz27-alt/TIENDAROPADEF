@@ -1,0 +1,78 @@
+@page
+@model front_tienda.Pages.Administracion.MarcasModel
+@{
+    ViewData["Title"] = "Marcas";
+}
+
+<h1>Marcas</h1>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" enctype="multipart/form-data" class="col-md-6 mb-4">
+    <input type="hidden" asp-for="Entidad.IdMarca" />
+    <input type="hidden" asp-for="Entidad.Imagen" />
+    <label asp-for="Entidad.Nombre">Nombre</label>
+    <input asp-for="Entidad.Nombre" class="form-control mb-2" maxlength="30" />
+    <label asp-for="Entidad.PaisOrigen">País de origen</label>
+    <input asp-for="Entidad.PaisOrigen" class="form-control mb-2" maxlength="30" />
+    <label asp-for="Entidad.SitioWeb">Sitio web</label>
+    <input asp-for="Entidad.SitioWeb" class="form-control mb-2" maxlength="100" />
+    <label asp-for="ArchivoImagen" class="form-label">Imagen de la marca</label>
+    <input asp-for="ArchivoImagen" type="file" accept=".jpg,.jpeg,.jfif,.png,.webp,.gif,.bmp,.tif,.tiff,.avif" class="form-control mb-2" />
+    <div class="form-text mb-2">Selecciona una imagen JPG, PNG, WEBP, GIF, BMP, TIFF o AVIF de máximo 5 MB.</div>
+    @if (!string.IsNullOrWhiteSpace(Model.Entidad.Imagen))
+    {
+        <img src="@Model.Entidad.Imagen" alt="Imagen actual de @Model.Entidad.Nombre" class="admin-image-preview mb-3" />
+    }
+    <div class="form-check mb-3">
+        <input asp-for="Entidad.Estado" class="form-check-input" />
+        <label asp-for="Entidad.Estado" class="form-check-label">Activa</label>
+    </div>
+    @if (Model.Entidad.IdMarca == 0)
+    {
+        <button class="btn btn-primary" asp-page-handler="Insertar">Insertar</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" asp-page-handler="Actualizar">Actualizar</button>
+    }
+    <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="input-group col-md-6">
+        <input asp-for="Filtro.Nombre" class="form-control" placeholder="Buscar marca" />
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button>
+    </div>
+</form>
+
+<table class="table">
+    <thead><tr><th>Imagen</th><th>Nombre</th><th>País</th><th>Sitio web</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+        @foreach (var marca in Model.Lista)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(marca.Imagen))
+                    {
+                        <img src="@marca.Imagen" alt="Imagen de @marca.Nombre" class="admin-image-thumbnail" />
+                    }
+                </td>
+                <td>@marca.Nombre</td><td>@marca.PaisOrigen</td><td>@marca.SitioWeb</td>
+                <td>@(marca.Estado ? "Activa" : "Inactiva")</td>
+                <td>
+                    <form method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@marca.IdMarca" />
+                        <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                    </form>
+                    <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres borrar esta marca?');">
+                        <input type="hidden" name="id" value="@marca.IdMarca" />
+                        <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Borrar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

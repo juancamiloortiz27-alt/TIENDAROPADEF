@@ -1,0 +1,61 @@
+@page
+@model front_tienda.Pages.Ventanas.MisFavoritosModel
+@{
+    ViewData["Title"] = "Mis favoritos";
+}
+
+<h1>Mis favoritos</h1>
+<p>Prendas que guardaste para encontrar más rápido.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+@if (Model.Lista.Count == 0)
+{
+    <div class="card card-body">
+        <p class="mb-3">Aún no guardaste productos favoritos.</p>
+        <a class="btn btn-outline-primary align-self-start" asp-page="/Ventanas/Productos">Explorar productos</a>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var favorito in Model.Lista)
+        {
+            var producto = favorito._Producto;
+            if (producto == null) continue;
+            <div class="col">
+                <article class="card h-100 shadow-sm catalog-product-card">
+                    <a asp-page="/Ventanas/Producto" asp-route-codigoModelo="@producto.CodigoModelo" class="text-decoration-none text-dark flex-grow-1">
+                        @if (!string.IsNullOrWhiteSpace(producto.Imagen))
+                        {
+                            <img src="@producto.Imagen" alt="@producto.Nombre" class="product-list-image" />
+                        }
+                        else
+                        {
+                            <div class="home-product-placeholder">Sin foto disponible</div>
+                        }
+                        <div class="card-body">
+                            <p class="text-muted mb-1">@producto._Categoria?.Nombre</p>
+                            <h2 class="h5">@producto.Nombre</h2>
+                            <p>@producto.Descripcion</p>
+                            <p><strong>Marca:</strong> @producto._Marca?.Nombre</p>
+                            <p class="mb-0"><strong>Color:</strong> @producto._Color?.Nombre</p>
+                        </div>
+                    </a>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold">@FormatoMoneda.Cop(producto.Precio)</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <a asp-page="/Ventanas/Producto" asp-route-codigoModelo="@producto.CodigoModelo">Ver tallas</a>
+                            <form method="post" asp-page-handler="Borrar" onsubmit="return confirm('¿Quieres quitar este producto de favoritos?');">
+                                <input type="hidden" name="idProducto" value="@producto.IdProducto" />
+                                <button class="btn btn-sm btn-outline-danger" aria-label="Quitar de favoritos" title="Quitar de favoritos">♥</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

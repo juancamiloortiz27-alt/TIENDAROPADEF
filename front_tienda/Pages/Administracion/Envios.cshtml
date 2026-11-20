@@ -1,0 +1,90 @@
+@page
+@model front_tienda.Pages.Administracion.EnviosModel
+@{
+    ViewData["Title"] = "Envíos";
+}
+
+<h1>Administrar envíos</h1>
+<p>Asigna una transportadora a cada pedido pagado. El sistema genera automáticamente un número de guía único de 10 dígitos.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+@if (Model.Transportadoras.Count == 0)
+{
+    <div class="alert alert-warning">
+        Primero registra una transportadora.
+        <a asp-page="/Administracion/Transportadoras">Ir a transportadoras</a>
+    </div>
+}
+else if (Model.PedidosSinEnvio.Count == 0)
+{
+    <p>No hay pedidos pagados pendientes de asignación.</p>
+}
+else
+{
+    <form method="post" asp-page-handler="Crear" class="row g-3 align-items-end mb-4">
+        <div class="col-md-5">
+            <label asp-for="Entidad.Pedido" class="form-label">Pedido</label>
+            <select asp-for="Entidad.Pedido" class="form-select" required>
+                <option value="">Selecciona un pedido pagado</option>
+                @foreach (var pedido in Model.PedidosSinEnvio)
+                {
+                    <option value="@pedido.IdPedido">Pedido #@pedido.IdPedido · @pedido._Cliente?.Nombre @pedido._Cliente?.Apellido · @pedido.Fecha.ToString("g") · @FormatoMoneda.Cop(pedido.Total)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label asp-for="Entidad.Transportadora" class="form-label">Transportadora</label>
+            <select asp-for="Entidad.Transportadora" class="form-select" required>
+                <option value="">Selecciona una transportadora</option>
+                @foreach (var transportadora in Model.Transportadoras)
+                {
+                    <option value="@transportadora.IdTransportadoras">@transportadora.Nombre · @transportadora.Ciudad</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Crear envío</button>
+        </div>
+    </form>
+}
+
+<h2 class="h4">Envíos registrados</h2>
+@if (Model.Lista.Count == 0)
+{
+    <p>Aún no hay envíos registrados.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Pedido</th><th>Dirección</th><th>Transportadora</th><th>Número de guía</th><th>Estado</th><th>Actualizar</th></tr></thead>
+            <tbody>
+                @foreach (var envio in Model.Lista)
+                {
+                    <tr>
+                        <td>#@envio.Pedido</td>
+                        <td>@envio._Pedido?.DireccionEnvio, @envio._Pedido?.CiudadEnvio</td>
+                        <td>@envio._Transportadora?.Nombre</td>
+                        <td><code>@envio.NumeroGuia</code></td>
+                        <td>@envio.Estado</td>
+                        <td>
+                            <form method="post" asp-page-handler="ActualizarEstado" class="d-flex gap-2">
+                                <input type="hidden" name="id" value="@envio.IdEnvio" />
+                                <select name="estado" class="form-select form-select-sm" style="min-width: 140px">
+                                    @foreach (var estado in Model.Estados)
+                                    {
+                                        <option value="@estado" selected="@(estado == envio.Estado)">@estado</option>
+                                    }
+                                </select>
+                                <button class="btn btn-sm btn-outline-primary">Guardar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

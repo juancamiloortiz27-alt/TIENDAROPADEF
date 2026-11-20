@@ -1,0 +1,32 @@
+@page
+@model front_tienda.Pages.Cuenta.AccesoModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<h1>Iniciar sesión</h1>
+
+@if (Model.CredencialesInvalidas)
+{
+    <script>alert('Correo o contraseña inválidos');</script>
+}
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-danger">@Model.Mensaje</div>
+}
+
+<div class="row">
+    <section class="col-md-6">
+        <form method="post" asp-page-handler="Ingresar">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <label asp-for="Credenciales.Correo">Correo</label>
+            <input asp-for="Credenciales.Correo" class="form-control mb-2" />
+            <label asp-for="Credenciales.Contrasena">Contraseña</label>
+            <input asp-for="Credenciales.Contrasena" type="password" class="form-control mb-3" />
+            <button class="btn btn-primary">Iniciar sesión</button>
+        </form>
+        <p class="mt-3">¿No tienes cuenta? <a asp-page="/Cuenta/Registro" target="_blank">Regístrate aquí</a>.</p>
+    </section>
+</div>
+

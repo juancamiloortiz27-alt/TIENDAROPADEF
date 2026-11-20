@@ -1,0 +1,64 @@
+@page
+@model front_tienda.Pages.Ventanas.DireccionesModel
+@{
+    ViewData["Title"] = "Mis direcciones";
+}
+
+<h1>Mis direcciones</h1>
+<p>Guarda aquí las direcciones de entrega de tus pedidos.</p>
+
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert @(Model.Error ? "alert-danger" : "alert-info")">@Model.Mensaje</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <form method="post" asp-page-handler="Guardar" class="card card-body">
+            <h2 class="h5">@(Model.Formulario.IdDireccion == 0 ? "Agregar dirección" : "Editar dirección")</h2>
+            <input type="hidden" asp-for="Formulario.IdDireccion" />
+            <div class="mb-3">
+                <label asp-for="Formulario.Ciudad" class="form-label">Ciudad</label>
+                <input asp-for="Formulario.Ciudad" class="form-control" maxlength="30" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Formulario.Direccion" class="form-label">Dirección</label>
+                <input asp-for="Formulario.Direccion" class="form-control" maxlength="100" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Formulario.CodigoPostal" class="form-label">Código postal</label>
+                <input asp-for="Formulario.CodigoPostal" class="form-control" maxlength="10" required />
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary">Guardar</button>
+                <a class="btn btn-outline-secondary" asp-page="/Ventanas/Direcciones">Limpiar</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-7">
+        @if (Model.Direcciones.Count == 0)
+        {
+            <p>Aún no tienes direcciones guardadas.</p>
+        }
+        else
+        {
+            @foreach (var direccion in Model.Direcciones)
+            {
+                <div class="card card-body mb-3">
+                    <strong>@direccion.Direccion</strong>
+                    <span>@direccion.Ciudad · Código postal @direccion.CodigoPostal</span>
+                    <div class="d-flex gap-2 mt-3">
+                        <form method="post" asp-page-handler="Editar">
+                            <input type="hidden" name="id" value="@direccion.IdDireccion" />
+                            <button class="btn btn-sm btn-outline-primary">Editar</button>
+                        </form>
+                        <form method="post" asp-page-handler="Borrar" onsubmit="return confirm('¿Quieres eliminar esta dirección?');">
+                            <input type="hidden" name="id" value="@direccion.IdDireccion" />
+                            <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

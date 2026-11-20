@@ -1,0 +1,107 @@
+@page
+@model front_tienda.Pages.Ventanas.ProductosModel
+@{
+    ViewData["Title"] = !string.IsNullOrWhiteSpace(Model.FiltroMarca) ? "Productos de " + Model.FiltroMarca : !string.IsNullOrWhiteSpace(Model.FiltroCategoria) ? "Categoría " + Model.FiltroCategoria : "Productos";
+}
+
+<h1>@(!string.IsNullOrWhiteSpace(Model.FiltroMarca) ? "Productos de " + Model.FiltroMarca : !string.IsNullOrWhiteSpace(Model.FiltroCategoria) ? "Categoría " + Model.FiltroCategoria : "Productos")</h1>
+<p>@(!string.IsNullOrWhiteSpace(Model.FiltroMarca) ? "Explora las prendas de esta marca." : !string.IsNullOrWhiteSpace(Model.FiltroCategoria) ? "Explora las prendas de esta categoría." : "Explora los productos disponibles en la tienda.")</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" class="row g-2 align-items-end mb-4">
+    <div class="col-12 col-md-4">
+        <label asp-for="Filtro.Nombre" class="form-label">Buscar</label>
+        <input asp-for="Filtro.Nombre" class="form-control" placeholder="Nombre de una prenda" />
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
+        <label asp-for="FiltroCategoria" class="form-label">Categoría</label>
+        <select asp-for="FiltroCategoria" class="form-select">
+            <option value="">Todas las categorías</option>
+            @foreach (var categoria in Model.Categorias)
+            {
+                <option value="@categoria.Nombre">@categoria.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
+        <label asp-for="FiltroMarca" class="form-label">Marca</label>
+        <select asp-for="FiltroMarca" class="form-select">
+            <option value="">Todas las marcas</option>
+            @foreach (var marca in Model.Marcas)
+            {
+                <option value="@marca.Nombre">@marca.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="col-12">
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Aplicar filtros</button>
+    </div>
+</form>
+
+@if (Model.Lista.Count == 0)
+{
+    <p>No hay productos para mostrar.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var producto in Model.Lista)
+        {
+            <div class="col">
+                <article class="card h-100 shadow-sm catalog-product-card">
+                    <a asp-page="/Ventanas/Producto" asp-route-codigoModelo="@producto.CodigoModelo" class="text-decoration-none text-dark flex-grow-1">
+                        @if (!string.IsNullOrWhiteSpace(producto.Imagen))
+                        {
+                            <img src="@producto.Imagen" alt="@producto.Nombre" class="product-list-image" />
+                        }
+                        <div class="card-body">
+                            <p class="text-muted mb-1">@producto.NombreCategoria</p>
+                            <h2 class="h5 card-title">@producto.Nombre</h2>
+                            @if (producto.Disponible)
+                            {
+                                <span class="badge bg-success mb-2">Disponible</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary mb-2">Agotado</span>
+                            }
+                            <p class="card-text">@producto.Descripcion</p>
+                            <p class="mb-2"><strong>Marca:</strong> @producto.NombreMarca</p>
+                            <p class="mb-2">
+                                <strong>Color:</strong>
+                                <span class="d-inline-block border rounded-circle me-1" style="width: 18px; height: 18px; vertical-align: middle; background-color: @producto.CodigoHexadecimal"></span>
+                                @producto.NombreColor
+                            </p>
+                        </div>
+                    </a>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                        <span class="fs-5 fw-bold">@FormatoMoneda.Cop(producto.Precio)</span>
+                        <div class="d-flex align-items-center gap-2">
+                            @if (Model.ClienteAutenticado)
+                            {
+                                var estaGuardado = Model.ListaFavoritos.Any(x => x._Producto?.CodigoModelo == producto.CodigoModelo);
+                                <form method="post" asp-page-handler="CambiarFavorito">
+                                    <input type="hidden" name="idProducto" value="@producto.IdProducto" />
+                                    <input type="hidden" name="codigoModelo" value="@producto.CodigoModelo" />
+                                    <input type="hidden" name="Filtro.Nombre" value="@Model.Filtro.Nombre" />
+                                    <input type="hidden" name="FiltroCategoria" value="@Model.FiltroCategoria" />
+                                    <input type="hidden" name="FiltroMarca" value="@Model.FiltroMarca" />
+                                    <button class="btn btn-sm @(estaGuardado ? "btn-danger" : "btn-outline-danger")" aria-label="@(estaGuardado ? "Quitar de favoritos" : "Agregar a favoritos")" title="@(estaGuardado ? "Quitar de favoritos" : "Agregar a favoritos")">
+                                        @(estaGuardado ? "♥" : "♡")
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="btn btn-sm btn-outline-danger" asp-page="/Cuenta/Acceso" asp-route-returnUrl="@Model.RutaProducto(producto.CodigoModelo)" aria-label="Inicia sesión para guardar en favoritos" title="Inicia sesión para guardar en favoritos">♡</a>
+                            }
+                            <a asp-page="/Ventanas/Producto" asp-route-codigoModelo="@producto.CodigoModelo">Ver tallas →</a>
+                        </div>
+                    </div>
+            </div>
+        }
+    </div>
+}

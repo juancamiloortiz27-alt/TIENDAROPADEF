@@ -1,0 +1,67 @@
+@page
+@model front_tienda.Pages.Administracion.TransportadorasModel
+@{
+    ViewData["Title"] = "Transportadoras";
+}
+
+<h1>Transportadoras</h1>
+<p>Registra aquí las empresas que podrán asignarse a los envíos de los pedidos.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" class="col-lg-6 mb-4">
+    <input type="hidden" asp-for="Entidad.IdTransportadoras" />
+    <label asp-for="Entidad.Nombre" class="form-label">Nombre</label>
+    <input asp-for="Entidad.Nombre" class="form-control mb-2" maxlength="30" required />
+    <label asp-for="Entidad.Telefono" class="form-label">Teléfono</label>
+    <input asp-for="Entidad.Telefono" class="form-control mb-2" maxlength="12" required />
+    <label asp-for="Entidad.Correo" class="form-label">Correo</label>
+    <input asp-for="Entidad.Correo" type="email" class="form-control mb-2" maxlength="50" required />
+    <label asp-for="Entidad.Ciudad" class="form-label">Ciudad</label>
+    <input asp-for="Entidad.Ciudad" class="form-control mb-3" maxlength="15" required />
+    @if (Model.Entidad.IdTransportadoras == 0)
+    {
+        <button class="btn btn-primary" asp-page-handler="Insertar">Guardar transportadora</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" asp-page-handler="Actualizar">Guardar cambios</button>
+    }
+    <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="row g-2 col-lg-8">
+        <div class="col-md-4"><input asp-for="Filtro.Nombre" class="form-control" placeholder="Nombre" /></div>
+        <div class="col-md-4"><input asp-for="Filtro.Correo" class="form-control" placeholder="Correo" /></div>
+        <div class="col-md-3"><input asp-for="Filtro.Ciudad" class="form-control" placeholder="Ciudad" /></div>
+        <div class="col-md-1"><button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button></div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Ciudad</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var transportadora in Model.Lista)
+            {
+                <tr>
+                    <td>@transportadora.Nombre</td><td>@transportadora.Telefono</td>
+                    <td>@transportadora.Correo</td><td>@transportadora.Ciudad</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@transportadora.IdTransportadoras" />
+                            <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                        </form>
+                        <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres eliminar esta transportadora?');">
+                            <input type="hidden" name="id" value="@transportadora.IdTransportadoras" />
+                            <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

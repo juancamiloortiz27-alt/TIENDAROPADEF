@@ -1,0 +1,69 @@
+@page
+@model front_tienda.Pages.Administracion.CuponesModel
+@{
+    ViewData["Title"] = "Cupones";
+}
+
+<h1>Administrar cupones</h1>
+<p>Crea códigos de descuento, define su porcentaje y vencimiento, y desactiva los que ya no deban usarse.</p>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+
+<form method="post" class="col-lg-6 mb-4">
+    <input type="hidden" asp-for="Entidad.IdCupon" />
+    <label asp-for="Entidad.Codigo" class="form-label">Código</label>
+    <input asp-for="Entidad.Codigo" class="form-control mb-2" maxlength="15" placeholder="Ejemplo: VERANO20" required />
+    <label asp-for="Entidad.PorcentajeDescuento" class="form-label">Descuento (%)</label>
+    <input asp-for="Entidad.PorcentajeDescuento" class="form-control mb-2" type="number" min="0.01" max="100" step="0.01" required />
+    <label asp-for="Entidad.FechaVence" class="form-label">Fecha de vencimiento</label>
+    <input asp-for="Entidad.FechaVence" class="form-control mb-2" type="date" required />
+    <div class="form-check mb-3">
+        <input asp-for="Entidad.Estado" class="form-check-input" />
+        <label asp-for="Entidad.Estado" class="form-check-label">Activo (los clientes pueden usarlo)</label>
+    </div>
+    @if (Model.Entidad.IdCupon == 0)
+    {
+        <button class="btn btn-primary" asp-page-handler="Insertar">Crear cupón</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" asp-page-handler="Actualizar">Guardar cambios</button>
+    }
+    <button class="btn btn-secondary" asp-page-handler="Limpiar">Limpiar</button>
+</form>
+
+<form method="post" class="mb-3">
+    <div class="input-group col-md-6">
+        <input asp-for="Filtro.Codigo" class="form-control" placeholder="Buscar código" />
+        <button class="btn btn-outline-primary" asp-page-handler="Buscar">Buscar</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Código</th><th>Descuento</th><th>Vence</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>
+            @foreach (var cupon in Model.Lista)
+            {
+                <tr>
+                    <td><strong>@cupon.Codigo</strong></td>
+                    <td>@(cupon.PorcentajeDescuento)%</td>
+                    <td>@cupon.FechaVence.ToString("d")</td>
+                    <td>@(cupon.Estado ? "Activo" : "Inactivo")</td>
+                    <td>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@cupon.IdCupon" />
+                            <button class="btn btn-sm btn-outline-primary" asp-page-handler="Seleccionar">Editar</button>
+                        </form>
+                        <form method="post" class="d-inline" onsubmit="return confirm('¿Quieres eliminar este cupón?');">
+                            <input type="hidden" name="id" value="@cupon.IdCupon" />
+                            <button class="btn btn-sm btn-outline-danger" asp-page-handler="Borrar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

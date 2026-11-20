@@ -1,0 +1,25 @@
+@page
+@model front_tienda.Pages.Cuenta.RegistroModel
+@{
+    ViewData["Title"] = "Registro de cliente";
+}
+
+<h1>Crear cuenta de cliente</h1>
+@if (!string.IsNullOrEmpty(Model.Mensaje))
+{
+    <div class="alert alert-danger">@Model.Mensaje</div>
+}
+
+<form method="post" asp-page-handler="Registrar" class="col-md-6">
+    <label asp-for="Registro.Nombre">Nombre</label>
+    <input asp-for="Registro.Nombre" class="form-control mb-2" maxlength="50" />
+    <label asp-for="Registro.Apellido">Apellido</label>
+    <input asp-for="Registro.Apellido" class="form-control mb-2" maxlength="50" />
+    <label asp-for="Registro.Correo">Correo</label>
+    <input asp-for="Registro.Correo" class="form-control mb-2" maxlength="60" />
+    <label asp-for="Registro.Telefono">Teléfono</label>
+    <input asp-for="Registro.Telefono" class="form-control mb-2" maxlength="12" />
+    <label asp-for="Registro.Contrasena">Contraseña (mínimo 8 caracteres)</label>
+    <input asp-for="Registro.Contrasena" type="password" class="form-control mb-3" />
+    <button class="btn btn-success">Registrarme</button>
+</form>
