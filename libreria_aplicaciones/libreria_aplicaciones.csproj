@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="implementaciones\CuponesAplicacion.cs" />
+  </ItemGroup>
+
 
 	<ItemGroup>
 		<Page Include="Nucleo\script2.sql" />
@@ -17,6 +21,10 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="implementaciones\CuponesAplicacion.cs" />
   </ItemGroup>
 
 
