@@ -56,9 +56,9 @@ namespace front_tienda.Pages.Ventanas
             {
                 try
                 {
-                    this.ICarritosPresentacion.AgregarProducto(new AgregarProductoCarrito
+                    this.ICarritosPresentacion.AgregarProducto(new DetalleCarritos
                     {
-                        IdProducto = IdProductoSeleccionado,
+                        Producto = IdProductoSeleccionado,
                         Cantidad = Cantidad
                     });
                     Mensaje = "Producto agregado al carrito";

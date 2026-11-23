@@ -19,16 +19,16 @@ namespace presentaciones_tienda.implementaciones
             return task.Result;
         }
 
-        public CarritoPublico AgregarProducto(AgregarProductoCarrito entidad)
+        public CarritoPublico AgregarProducto(DetalleCarritos entidad)
         {
-            if (entidad.IdProducto == 0 || entidad.Cantidad <= 0)
+            if (entidad.Producto == 0 || entidad.Cantidad <= 0)
                 throw new Exception("Selecciona un producto y una cantidad válida");
             var task = this.IComunicaciones.Ejecutar<CarritoPublico>("Carritos/AgregarProducto", entidad);
             task.Wait();
             return task.Result;
         }
 
-        public CarritoPublico ActualizarProducto(ActualizarDetalleCarrito entidad)
+        public CarritoPublico ActualizarProducto(DetalleCarritos entidad)
         {
             if (entidad.IdDetalleCarrito == 0 || entidad.Cantidad <= 0)
                 throw new Exception("La cantidad debe ser mayor que cero");
@@ -37,11 +37,11 @@ namespace presentaciones_tienda.implementaciones
             return task.Result;
         }
 
-        public CarritoPublico BorrarProducto(EliminarDetalleCarrito entidad)
+        public CarritoPublico BorrarProducto(int idDetalleCarrito)
         {
-            if (entidad.IdDetalleCarrito == 0)
+            if (idDetalleCarrito == 0)
                 throw new Exception("No se ha seleccionado un producto");
-            var task = this.IComunicaciones.Ejecutar<CarritoPublico>("Carritos/BorrarProducto", entidad);
+            var task = this.IComunicaciones.Ejecutar<CarritoPublico>("Carritos/BorrarProducto", idDetalleCarrito);
             task.Wait();
             return task.Result;
         }

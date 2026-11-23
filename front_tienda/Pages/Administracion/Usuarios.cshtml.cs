@@ -27,7 +27,7 @@ namespace front_tienda.Pages.Administracion
             return Page();
         }
 
-        public IActionResult OnPostCambiarRol(CambioRolUsuario entidad)
+        public IActionResult OnPostCambiarRol(Usuarios entidad)
         {
             if (HttpContext.Session.GetString("Rol") != "Administrador")
                 return Forbid();
@@ -44,7 +44,7 @@ namespace front_tienda.Pages.Administracion
             return Page();
         }
 
-        public IActionResult OnPostCambiarEstado(EstadoUsuario entidad)
+        public IActionResult OnPostCambiarEstado(Usuarios entidad)
         {
             if (HttpContext.Session.GetString("Rol") != "Administrador")
                 return Forbid();

@@ -32,13 +32,13 @@ namespace presentaciones_tienda.implementaciones
             return task.GetAwaiter().GetResult();
         }
 
-        public void CambiarRol(CambioRolUsuario entidad)
+        public void CambiarRol(Usuarios entidad)
         {
             var task = this.IComunicaciones.Ejecutar<bool>("Usuarios/CambiarRol", entidad);
             task.Wait();
         }
 
-        public void CambiarEstado(EstadoUsuario entidad)
+        public void CambiarEstado(Usuarios entidad)
         {
             var task = this.IComunicaciones.Ejecutar<bool>("Usuarios/CambiarEstado", entidad);
             task.Wait();

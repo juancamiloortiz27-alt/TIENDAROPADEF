@@ -5,8 +5,8 @@ namespace presentaciones_tienda.interfaces
     public interface ICarritosPresentacion
     {
         CarritoPublico Consultar();
-        CarritoPublico AgregarProducto(AgregarProductoCarrito entidad);
-        CarritoPublico ActualizarProducto(ActualizarDetalleCarrito entidad);
-        CarritoPublico BorrarProducto(EliminarDetalleCarrito entidad);
+        CarritoPublico AgregarProducto(DetalleCarritos entidad);
+        CarritoPublico ActualizarProducto(DetalleCarritos entidad);
+        CarritoPublico BorrarProducto(int idDetalleCarrito);
     }
 }

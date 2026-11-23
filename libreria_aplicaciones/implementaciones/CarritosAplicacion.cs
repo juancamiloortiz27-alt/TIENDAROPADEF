@@ -20,13 +20,13 @@ namespace libreria_aplicaciones.implementaciones
             return carrito == null ? new CarritoPublico() : CrearResumen(carrito);
         }
 
-        public CarritoPublico AgregarProducto(int idCliente, AgregarProductoCarrito entidad)
+        public CarritoPublico AgregarProducto(int idCliente, DetalleCarritos entidad)
         {
-            if (entidad.IdProducto == 0 || entidad.Cantidad <= 0)
+            if (entidad.Producto == 0 || entidad.Cantidad <= 0)
                 throw new Exception("Selecciona un producto y una cantidad válida");
 
             var producto = this.IConexion.Productos!
-                .FirstOrDefault(x => x.IdProducto == entidad.IdProducto);
+                .FirstOrDefault(x => x.IdProducto == entidad.Producto);
             if (producto == null ||
                 !this.IConexion.Categorias!.Any(x => x.IdCategoria == producto.Categoria && x.Estado) ||
                 !this.IConexion.Marcas!.Any(x => x.IdMarca == producto.Marca && x.Estado))
@@ -67,7 +67,7 @@ namespace libreria_aplicaciones.implementaciones
             return CrearResumen(carrito);
         }
 
-        public CarritoPublico ActualizarProducto(int idCliente, ActualizarDetalleCarrito entidad)
+        public CarritoPublico ActualizarProducto(int idCliente, DetalleCarritos entidad)
         {
             if (entidad.IdDetalleCarrito == 0 || entidad.Cantidad <= 0)
                 throw new Exception("La cantidad debe ser mayor que cero");

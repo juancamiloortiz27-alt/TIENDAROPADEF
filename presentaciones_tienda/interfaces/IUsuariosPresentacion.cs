@@ -7,7 +7,7 @@ namespace presentaciones_tienda.interfaces
         ResultadoAutenticacion IniciarSesion(CredencialesUsuario entidad);
         ResultadoAutenticacion RegistrarCliente(RegistroCliente entidad);
         List<UsuarioResumen> ConsultarUsuarios();
-        void CambiarRol(CambioRolUsuario entidad);
-        void CambiarEstado(EstadoUsuario entidad);
+        void CambiarRol(Usuarios entidad);
+        void CambiarEstado(Usuarios entidad);
     }
 }

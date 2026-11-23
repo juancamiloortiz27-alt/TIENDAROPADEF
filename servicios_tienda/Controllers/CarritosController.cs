@@ -25,23 +25,23 @@ namespace servicios_tienda.Controllers
         }
 
         [HttpPost]
-        public IActionResult AgregarProducto(AgregarProductoCarrito entidad)
+        public IActionResult AgregarProducto(DetalleCarritos entidad)
         {
             try { return Ok(this.ICarritosAplicacion.AgregarProducto(ObtenerIdCliente(), entidad)); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost]
-        public IActionResult ActualizarProducto(ActualizarDetalleCarrito entidad)
+        public IActionResult ActualizarProducto(DetalleCarritos entidad)
         {
             try { return Ok(this.ICarritosAplicacion.ActualizarProducto(ObtenerIdCliente(), entidad)); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost]
-        public IActionResult BorrarProducto(EliminarDetalleCarrito entidad)
+        public IActionResult BorrarProducto([FromBody] int idDetalleCarrito)
         {
-            try { return Ok(this.ICarritosAplicacion.BorrarProducto(ObtenerIdCliente(), entidad.IdDetalleCarrito)); }
+            try { return Ok(this.ICarritosAplicacion.BorrarProducto(ObtenerIdCliente(), idDetalleCarrito)); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 

@@ -54,7 +54,7 @@ namespace servicios_tienda.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult CambiarRol(CambioRolUsuario entidad)
+        public IActionResult CambiarRol(Usuarios entidad)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace servicios_tienda.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult CambiarEstado(EstadoUsuario entidad)
+        public IActionResult CambiarEstado(Usuarios entidad)
         {
             try
             {

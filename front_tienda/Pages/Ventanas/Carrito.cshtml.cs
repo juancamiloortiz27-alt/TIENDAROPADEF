@@ -46,7 +46,7 @@ namespace front_tienda.Pages.Ventanas
             if (!EsCliente()) return Forbid();
             try
             {
-                this.ICarritosPresentacion.ActualizarProducto(new ActualizarDetalleCarrito
+                this.ICarritosPresentacion.ActualizarProducto(new DetalleCarritos
                 {
                     IdDetalleCarrito = idDetalleCarrito,
                     Cantidad = cantidad
@@ -63,10 +63,7 @@ namespace front_tienda.Pages.Ventanas
             if (!EsCliente()) return Forbid();
             try
             {
-                this.ICarritosPresentacion.BorrarProducto(new EliminarDetalleCarrito
-                {
-                    IdDetalleCarrito = id
-                });
+                this.ICarritosPresentacion.BorrarProducto(id);
                 Mensaje = "Producto eliminado del carrito";
             }
             catch (Exception ex) { Mensaje = ex.Message; }
