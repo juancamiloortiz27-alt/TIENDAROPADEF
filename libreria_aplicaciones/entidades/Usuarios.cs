@@ -11,6 +11,6 @@ namespace libreria_aplicaciones.entidades
         public string? Rol { get; set; }
         public bool Estado { get; set; }
         public int? Cliente { get; set; }
-        [ForeignKey(nameof(Cliente))] public Clientes? _Cliente { get; set; }
+        [ForeignKey("Cliente")] public Clientes? _Cliente { get; set; }
     }
 }

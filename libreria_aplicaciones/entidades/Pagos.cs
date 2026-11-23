@@ -14,6 +14,6 @@ namespace libreria_aplicaciones.entidades
         public int Pedido { get; set; }
         [ForeignKey("Pedido")]public Pedidos? _Pedido { get; set; }
         public int MetodoPago { get; set; }
-        [ForeignKey(nameof(MetodoPago))]public MetodoPagos? _MetodoPago { get; set; }
+        [ForeignKey("MetodoPago")]public MetodoPagos? _MetodoPago { get; set; }
     }
 }

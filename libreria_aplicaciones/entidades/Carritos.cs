@@ -14,7 +14,7 @@ namespace libreria_aplicaciones.entidades
         public decimal Total { get; set; }
         public int Cliente { get; set; }
 
-        [ForeignKey(nameof(Cliente))]public Clientes? _Cliente { get; set; }
+        [ForeignKey("Cliente")]public Clientes? _Cliente { get; set; }
         public List<DetalleCarritos>? DetalleCarritos { get; set; }
     }
 }

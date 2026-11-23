@@ -15,15 +15,15 @@ namespace libreria_aplicaciones.entidades
         public string? Descripcion { get; set; }
         public string? Imagen { get; set; }
         public int Categoria { get; set; }
-        [ForeignKey(nameof(Categoria))]public Categorias? _Categoria { get; set; }
+        [ForeignKey("Categoria")]public Categorias? _Categoria { get; set; }
         public int Marca { get; set; }
-        [ForeignKey(nameof(Marca))]public Marcas? _Marca { get; set; }
+        [ForeignKey("Marca")]public Marcas? _Marca { get; set; }
         public int Color { get; set; }
-        [ForeignKey(nameof(Color))]public Colores? _Color { get; set; }
+        [ForeignKey("Color")]public Colores? _Color { get; set; }
         public int Proveedor { get; set; }
-        [ForeignKey(nameof(Proveedor))]public Proveedores? _Proveedor { get; set; }
+        [ForeignKey("Proveedor")]public Proveedores? _Proveedor { get; set; }
         public int Talla { get; set; }
-        [ForeignKey(nameof(Talla))]public Tallas? _Talla { get; set; }
+        [ForeignKey("Talla")]public Tallas? _Talla { get; set; }
         public List<Inventarios>? Inventario { get; set; }
         public List<DetalleCarritos>? DetalleCarrito { get; set; }
         public List<DetallePedidos>? DetallePedido { get; set; }

@@ -14,6 +14,6 @@ namespace libreria_aplicaciones.entidades
         public int Carrito { get; set; }
         [ForeignKey("Carrito")]public Carritos? _Carrito { get; set; }
         public int Producto { get; set; }
-        [ForeignKey(nameof(Producto))]public Productos? _Producto { get; set; }
+        [ForeignKey("Producto")]public Productos? _Producto { get; set; }
     }
 }

@@ -11,8 +11,8 @@ namespace libreria_aplicaciones.entidades
         [Key]public int IdFavorito { get; set; }
         public bool Estado { get; set; }
         public int Cliente { get; set; }
-        [ForeignKey(nameof(Cliente))]public Clientes? _Cliente { get; set; }
+        [ForeignKey("Cliente")]public Clientes? _Cliente { get; set; }
         public int Producto { get; set; }
-        [ForeignKey(nameof(Producto))]public Productos? _Producto { get; set; }
+        [ForeignKey("Producto")]public Productos? _Producto { get; set; }
     }
 }

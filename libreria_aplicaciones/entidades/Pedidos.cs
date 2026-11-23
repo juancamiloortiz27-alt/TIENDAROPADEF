@@ -13,9 +13,9 @@ namespace libreria_aplicaciones.entidades
         public string? Estado { get; set; }
         public decimal Total { get; set; }
         public int Cliente { get; set; }
-        [ForeignKey(nameof(Cliente))] public Clientes? _Cliente { get; set; }
+        [ForeignKey("Cliente")] public Clientes? _Cliente { get; set; }
         public int? Cupon { get; set; }
-        [ForeignKey(nameof(Cupon))]public Cupones? _Cupon { get; set; }
+        [ForeignKey("Cupon")]public Cupones? _Cupon { get; set; }
         public string? CiudadEnvio { get; set; }
         public string? DireccionEnvio { get; set; }
         public string? CodigoPostalEnvio { get; set; }

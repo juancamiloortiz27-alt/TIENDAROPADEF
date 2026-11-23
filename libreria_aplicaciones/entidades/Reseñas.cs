@@ -12,8 +12,8 @@ namespace libreria_aplicaciones.entidades
         public decimal Calificacion { get; set; }
         public string? Comentario { get; set; }
         public int Cliente { get; set; }
-        [ForeignKey(nameof(Cliente))]public Clientes? _Cliente { get; set; }
+        [ForeignKey("Cliente")]public Clientes? _Cliente { get; set; }
         public int Producto { get; set; }
-        [ForeignKey(nameof(Producto))]public Productos? _Producto { get; set; }
+        [ForeignKey("Producto")]public Productos? _Producto { get; set; }
     }
 }

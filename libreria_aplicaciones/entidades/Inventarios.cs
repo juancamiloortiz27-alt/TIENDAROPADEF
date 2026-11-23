@@ -13,6 +13,6 @@ namespace libreria_aplicaciones.entidades
         public int StockMinimo { get; set; }
         public string? Ubicacion { get; set; }
         public int Producto { get; set; }
-        [ForeignKey(nameof(Producto))]public Productos? _Producto { get; set; }
+        [ForeignKey("Producto")]public Productos? _Producto { get; set; }
     }
 }

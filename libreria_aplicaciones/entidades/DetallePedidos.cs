@@ -12,7 +12,7 @@ namespace libreria_aplicaciones.entidades
         public int Cantidad { get; set; }
         public decimal Precio { get; set; }
         public int Producto { get; set; }
-        [ForeignKey(nameof(Producto))]public Productos? _Producto { get; set; }
+        [ForeignKey("Producto")]public Productos? _Producto { get; set; }
         public int Pedido { get; set; }
         [ForeignKey("Pedido")]public Pedidos? _Pedido { get; set; }
     }
