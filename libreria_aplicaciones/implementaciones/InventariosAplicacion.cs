@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace libreria_aplicaciones.implementaciones
 {
-    public class InventariosAplicacion
+    public class InventariosAplicacion : IInventariosAplicacion
     {
         private const int StockMinimo = 5;
         private IConexion IConexion;

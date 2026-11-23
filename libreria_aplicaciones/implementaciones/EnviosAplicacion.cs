@@ -8,7 +8,7 @@ using System.Text;
 
 namespace libreria_aplicaciones.implementaciones
 {
-    public class EnviosAplicacion
+    public class EnviosAplicacion : IEnviosAplicacion
     {
         private static readonly string[] EstadosPermitidos =
         {

@@ -3,7 +3,7 @@ using libreria_aplicaciones.entidades;
 
 namespace libreria_aplicaciones.implementaciones
 {
-    public class AuditoriasAplicacion
+    public class AuditoriasAplicacion : IAuditoriasAplicacion
     {
         private IConexion IConexion;
 
